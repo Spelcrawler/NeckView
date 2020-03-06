@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="#BEBEBE">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_marginTop="24dp">
+        <Button
+            android:id="@+id/button_setup_gibson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gibson"/>
+        <Button
+            android:id="@+id/button_setup_jackson"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Jackson"/>
+        <Button
+            android:id="@+id/button_setup_bass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bass"/>
+    </LinearLayout>
+
+    <com.spelcrawler.neckview.NeckView
+        android:id="@+id/neckView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="96dp"
+        android:layout_marginBottom="96dp"/>
+
+
+</FrameLayout>
