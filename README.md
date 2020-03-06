@@ -7,9 +7,9 @@ Simple guitar neck view
 Download
 --------
 
-```Gradle:
+Gradle:
 
-dependencies {
+```dependencies {
   implementation 'com.github.spelcrawler:neckview:0.9.3'
 }
 ```
