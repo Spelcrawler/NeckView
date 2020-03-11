@@ -23,7 +23,9 @@ import com.spelcrawler.neckview.parts.TrapezeColorFretboardBinding;
 import com.spelcrawler.neckview.parts.TriangleColorFretboardBinding;
 import com.spelcrawler.neckview.parts.base.NoteMark;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NeckView.OnNoteClickListener, View.OnClickListener {
 
@@ -39,10 +41,57 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
         findViewById(R.id.button_setup_gibson).setOnClickListener(this);
         findViewById(R.id.button_setup_jackson).setOnClickListener(this);
 
-        mNeckView.setNoteMarks(Arrays.asList(new CircleNoteMark(1, 1), new CircleNoteMark(0, 1)));
+        mNeckView.setNoteMarks(createMarks());
         mNeckView.setOnNoteClickListener(this);
 
         setupGibson(mNeckView);
+    }
+
+    private List<NoteMark> createMarks() {
+        List<NoteMark> marks = new ArrayList<>();
+
+        CircleNoteMark eMark = new CircleNoteMark(0, 5);
+        eMark.setText("E");
+        eMark.setMarkColor(Color.RED);
+        marks.add(eMark);
+
+
+        CircleNoteMark  gBMark = new CircleNoteMark(2, 5);
+        gBMark.setText("F#");
+        gBMark.setMarkColor(Color.GREEN);
+        marks.add(gBMark);
+
+        CircleNoteMark  gMark = new CircleNoteMark(3, 5);
+        gMark.setText("G");
+        gMark.setMarkColor(Color.GREEN);
+        marks.add(gMark);
+
+        CircleNoteMark  aMark = new CircleNoteMark(0, 4);
+        aMark.setText("A");
+        aMark.setMarkColor(Color.GREEN);
+        marks.add(aMark);
+
+        CircleNoteMark  bMark = new CircleNoteMark(2, 4);
+        bMark.setText("B");
+        bMark.setMarkColor(Color.GREEN);
+        marks.add(bMark);
+
+        CircleNoteMark  cMark = new CircleNoteMark(3, 4);
+        cMark.setText("C");
+        cMark.setMarkColor(Color.GREEN);
+        marks.add(cMark);
+
+        CircleNoteMark  dMark = new CircleNoteMark(0, 3);
+        dMark.setText("D");
+        dMark.setMarkColor(Color.GREEN);
+        marks.add(dMark);
+
+        CircleNoteMark  eHighMark = new CircleNoteMark(3, 3);
+        eHighMark.setText("E");
+        eHighMark.setMarkColor(Color.RED);
+        marks.add(eHighMark);
+
+        return marks;
     }
 
     private void setupJackson(NeckView neckView) {
