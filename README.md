@@ -3,6 +3,7 @@
 # NeckView
 Simple guitar neck view
 
+![](static/screenshot.png)
 
 Download
 --------
