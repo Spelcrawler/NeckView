@@ -25,7 +25,9 @@ import com.spelcrawler.neckview.parts.base.NoteMark;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements NeckView.OnNoteClickListener, View.OnClickListener {
 
@@ -41,55 +43,26 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
         findViewById(R.id.button_setup_gibson).setOnClickListener(this);
         findViewById(R.id.button_setup_jackson).setOnClickListener(this);
 
-        mNeckView.setNoteMarks(createMarks());
         mNeckView.setOnNoteClickListener(this);
 
         setupGibson(mNeckView);
+        mNeckView.setNoteMarks(createMarks(10));
     }
 
-    private List<NoteMark> createMarks() {
+    private List<NoteMark> createMarks(int count) {
         List<NoteMark> marks = new ArrayList<>();
+        Random random = new Random();
 
-        CircleNoteMark eMark = new CircleNoteMark(0, 5);
-        eMark.setText("E");
-        eMark.setMarkColor(Color.RED);
-        marks.add(eMark);
+        for (int i = 0; i < count; i++) {
+            int fret = random.nextInt(14);
+            int string = random.nextInt(5);
+            CircleNoteMark mark = new CircleNoteMark(fret, string);
+            mark.setText(String.valueOf((i % 6) + 1));
+            mark.setMarkColor(i % 6 == 0 ? Color.RED : Color.GREEN);
 
-
-        CircleNoteMark  gBMark = new CircleNoteMark(2, 5);
-        gBMark.setText("F#");
-        gBMark.setMarkColor(Color.GREEN);
-        marks.add(gBMark);
-
-        CircleNoteMark  gMark = new CircleNoteMark(3, 5);
-        gMark.setText("G");
-        gMark.setMarkColor(Color.GREEN);
-        marks.add(gMark);
-
-        CircleNoteMark  aMark = new CircleNoteMark(0, 4);
-        aMark.setText("A");
-        aMark.setMarkColor(Color.GREEN);
-        marks.add(aMark);
-
-        CircleNoteMark  bMark = new CircleNoteMark(2, 4);
-        bMark.setText("B");
-        bMark.setMarkColor(Color.GREEN);
-        marks.add(bMark);
-
-        CircleNoteMark  cMark = new CircleNoteMark(3, 4);
-        cMark.setText("C");
-        cMark.setMarkColor(Color.GREEN);
-        marks.add(cMark);
-
-        CircleNoteMark  dMark = new CircleNoteMark(0, 3);
-        dMark.setText("D");
-        dMark.setMarkColor(Color.GREEN);
-        marks.add(dMark);
-
-        CircleNoteMark  eHighMark = new CircleNoteMark(3, 3);
-        eHighMark.setText("E");
-        eHighMark.setMarkColor(Color.RED);
-        marks.add(eHighMark);
+            marks.add(mark);
+        }
+        Collections.shuffle(marks);
 
         return marks;
     }
@@ -155,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
 
     @Override
     public void onNoteClick(int fret, int string) {
+        mNeckView.setNoteMarksWithAnimation(createMarks(10));
         Toast.makeText(this, "Note clicked fret: " + fret + ", string: " + string, Toast.LENGTH_SHORT).show();
     }
 

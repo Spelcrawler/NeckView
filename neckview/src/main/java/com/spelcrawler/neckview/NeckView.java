@@ -1,11 +1,13 @@
 package com.spelcrawler.neckview;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -26,6 +28,7 @@ import com.spelcrawler.neckview.parts.base.FretboardNut;
 import com.spelcrawler.neckview.parts.base.FretboardString;
 import com.spelcrawler.neckview.parts.base.FretboardTop;
 import com.spelcrawler.neckview.parts.base.NoteMark;
+import com.spelcrawler.neckview.parts.base.NoteMarkAnimatable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,8 @@ public class NeckView extends View {
     private RectF mFretboardBounds = new RectF();
     @NonNull
     private RectF mDrawBounds = new RectF();
+    @NonNull
+    private RectF mOldDrawBounds = new RectF();
 
     private int mFretCount = 14;
     private boolean mDrawZeroFret = false;
@@ -76,6 +81,13 @@ public class NeckView extends View {
     //x - fret index, y - string index
     @NonNull
     private Point mTouchedNote = new Point();
+
+    private ValueAnimator mValueAnimator = new ValueAnimator();
+    private float mAnimationValue = 0f;
+    private long mAnimationDuration = 300L;
+
+    @NonNull
+    private List<? extends NoteMark> mOldNoteMarks = new ArrayList<>();
 
 
     public NeckView(Context context) {
@@ -230,6 +242,27 @@ public class NeckView extends View {
         mNoteMarks = noteMarks;
     }
 
+    public void setAnimationDuration(long animationDuration) {
+        mAnimationDuration = animationDuration;
+    }
+
+    public void setNoteMarksWithAnimation(@NonNull List<? extends  NoteMark> noteMarks) {
+        mOldNoteMarks = new ArrayList<>(mNoteMarks);
+        mNoteMarks = new ArrayList<>(noteMarks);
+
+        mValueAnimator.setDuration(mAnimationDuration);
+        mValueAnimator.setFloatValues(0f, 1f);
+        mValueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mAnimationValue = (float) animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+
+        mValueAnimator.start();
+    }
+
     @NonNull
     public List<Integer> getBoundFrets() {
         return mBoundFrets;
@@ -356,11 +389,53 @@ public class NeckView extends View {
     }
 
     private void drawNoteMarks(Canvas canvas) {
-        for (NoteMark mark : mNoteMarks) {
-            calculateNoteMarkBounds(mDrawBounds, mFretPositions, mark.getFret(), mark.getString());
-            mark.draw(getContext(), canvas, mDrawBounds);
+        if (mOldNoteMarks.size() > 0 && mNoteMarks.size() > 0 && isMarksAnimatable(mOldNoteMarks) && isMarksAnimatable(mNoteMarks)) {
+            drawAnimatableNoteMarks(canvas);
+        } else {
+            drawNotAnimatableNoteMarks(canvas);
         }
     }
+
+    private void drawAnimatableNoteMarks(Canvas canvas) {
+        for (int i = 0; i < Math.max(mOldNoteMarks.size(), mNoteMarks.size()); i++) {
+            NoteMarkAnimatable oldMark = mOldNoteMarks.size() > i ? (NoteMarkAnimatable) mOldNoteMarks.get(i) : null;
+            NoteMarkAnimatable newMark = mNoteMarks.size() > i ? (NoteMarkAnimatable) mNoteMarks.get(i) : null;
+
+            if (oldMark == null && newMark != null) {
+                drawNoteMark(canvas, newMark);
+                return;
+            } else if (newMark == null) {
+                return;
+            }
+
+            calculateNoteMarkBounds(mOldDrawBounds, mFretPositions, oldMark.getFret(), oldMark.getString());
+            calculateNoteMarkBounds(mDrawBounds, mFretPositions, newMark.getFret(), newMark.getString());
+
+            if (newMark.getClass() == oldMark.getClass()) {
+                newMark.draw(getContext(), canvas, mOldDrawBounds, mDrawBounds, mAnimationValue, oldMark);
+            }
+        }
+    }
+
+    private void drawNotAnimatableNoteMarks(Canvas canvas) {
+        for (NoteMark mark : mNoteMarks) {
+            drawNoteMark(canvas, mark);
+        }
+    }
+
+    private boolean isMarksAnimatable(List<? extends NoteMark> marks) {
+        for (NoteMark mark : marks) {
+            if (!(mark instanceof NoteMarkAnimatable)) return false;
+        }
+
+        return true;
+    }
+
+    private void drawNoteMark(Canvas canvas, NoteMark noteMark) {
+        calculateNoteMarkBounds(mDrawBounds, mFretPositions, noteMark.getFret(), noteMark.getString());
+        noteMark.draw(getContext(), canvas, mDrawBounds);
+    }
+
 
     protected void calculateFretboardTopBounds(RectF source) {
         source.set(mBounds);
