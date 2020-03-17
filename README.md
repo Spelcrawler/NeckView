@@ -12,7 +12,7 @@ Gradle:
 
 ```
 dependencies {
-  implementation 'com.github.spelcrawler:neckview:0.9.6'
+  implementation 'com.github.spelcrawler:neckview:0.9.7'
 }
 ```
 
