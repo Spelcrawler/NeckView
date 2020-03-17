@@ -10,8 +10,6 @@ public abstract class NoteMarkAnimatable<T extends NoteMarkAnimatable<T>> extend
 
     private static RectF sBounds = new RectF();
 
-    protected float mAnimationPercent = 1f;
-
     public NoteMarkAnimatable(int fret, int string) {
         super(fret, string);
     }
@@ -22,17 +20,14 @@ public abstract class NoteMarkAnimatable<T extends NoteMarkAnimatable<T>> extend
         sBounds.right = fromBounds.right + (toBounds.right - fromBounds.right) * animationPercent;
         sBounds.bottom = fromBounds.bottom + (toBounds.bottom - fromBounds.bottom) * animationPercent;
 
-        mAnimationPercent = animationPercent;
-
-
-        draw(context, canvas, sBounds, fromMark);
+        draw(context, canvas, sBounds, fromMark, animationPercent);
     }
 
     @Override
     public void draw(Context context, Canvas canvas, RectF bounds) {
-        draw(context, canvas, bounds, null);
+        draw(context, canvas, bounds, null, 1f);
     }
 
-    public abstract void draw(Context context, Canvas canvas, RectF bounds, @Nullable T fromMark);
+    public abstract void draw(Context context, Canvas canvas, RectF bounds, @Nullable T fromMark, float animationPercent);
 
 }

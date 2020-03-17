@@ -71,25 +71,25 @@ public class CircleNoteMark extends NoteMarkAnimatable<CircleNoteMark> {
     }
 
     @Override
-    public void draw(Context context, Canvas canvas, RectF bounds, @Nullable CircleNoteMark fromMark) {
+    public void draw(Context context, Canvas canvas, RectF bounds, @Nullable CircleNoteMark fromMark, float animationPercent) {
         if (fromMark == null || fromMark == this) {
             Drawer.drawCircle(canvas, bounds.centerX(), bounds.centerY(), mMarkRadius, getColorWithAlpha(mMarkColor, 1));
             Drawer.drawText(canvas, bounds.centerX(), bounds.centerY(), mTextSize, mText, getColorWithAlpha(mTextColor, 1));
             return;
         }
 
-        int markColor = ColorUtils.blendARGB(fromMark.getMarkColor(), getMarkColor(), mAnimationPercent);
-        int textColor = ColorUtils.blendARGB(fromMark.getTextColor(), getTextColor(), mAnimationPercent);
+        int markColor = ColorUtils.blendARGB(fromMark.getMarkColor(), getMarkColor(), animationPercent);
+        int textColor = ColorUtils.blendARGB(fromMark.getTextColor(), getTextColor(), animationPercent);
 
         if (!getText().equals(fromMark.getText())) {
-            float textColorAlpha = mAnimationPercent > 0.5f ? (mAnimationPercent - 0.5f) * 2 : 1 - mAnimationPercent * 2;
+            float textColorAlpha = animationPercent > 0.5f ? (animationPercent - 0.5f) * 2 : 1 - animationPercent * 2;
             textColor = getColorWithAlpha(textColor, textColorAlpha);
         }
 
-        String text = mAnimationPercent > 0.5f ? getText() : fromMark.getText();
+        String text = animationPercent > 0.5f ? getText() : fromMark.getText();
 
-        float textSize = fromMark.getTextSize() + (getTextSize() - fromMark.getTextSize()) * mAnimationPercent;
-        float markRadius = fromMark.getMarkRadius() + (getMarkRadius() - fromMark.getMarkRadius()) * mAnimationPercent;
+        float textSize = fromMark.getTextSize() + (getTextSize() - fromMark.getTextSize()) * animationPercent;
+        float markRadius = fromMark.getMarkRadius() + (getMarkRadius() - fromMark.getMarkRadius()) * animationPercent;
 
         Drawer.drawCircle(canvas, bounds.centerX(), bounds.centerY(), markRadius, markColor);
         Drawer.drawText(canvas, bounds.centerX(), bounds.centerY(), textSize, text, textColor);
