@@ -12,7 +12,7 @@ Gradle:
 
 ```
 dependencies {
-  implementation 'com.github.spelcrawler:neckview:0.9.6'
+  implementation 'com.github.spelcrawler:neckview:0.9.8'
 }
 ```
 
@@ -35,20 +35,18 @@ Setup code:
 ```java
 NeckView neckView = findViewById(R.id.neckView);
 
-neckView.setFretWidth(25f);
-neckView.setNutWidth(150f);
-neckView.setupGuitarStrings(6, 3, 6, 28);
-neckView.setFinishWith(10);
-neckView.setFretCount(15);
-neckView.setNeckRightPadding(30);
+neckView.setupGuitarStrings(6, 3, R.dimen.stringGauge9, R.dimen.stringGauge48);
 
-neckView.setFretboardNut(new ColorFretboardNut(Color.BLACK));
+neckView.setFretboardNut(new ColorFretboardNut(ContextCompat.getColor(this, R.color.black)));
 neckView.setFretboardTop(new DrawableFretboardTop(R.drawable.neck_top));
-neckView.setFret(new TexturedFret(Color.LTGRAY));
-neckView.setFretboardFinish(new ColorFretboardFinish(0xFFFFFFF0));
-neckView.setFretboardBinding(new TriangleColorFretboardBinding(0xFFFFFFF0));
-neckView.setFretboardString(new TexturedFretboardString(0xFFB8B8B6));
+neckView.setFret(new TexturedFret(ContextCompat.getColor(this, R.color.fretColorGray)));
+neckView.setFretboardFinish(new ColorFretboardFinish(ContextCompat.getColor(this, R.color.white)));
+neckView.setFretboardBinding(new TriangleColorFretboardBinding(ContextCompat.getColor(this, R.color.white)));
+neckView.setFretboardString(new TexturedFretboardString(ContextCompat.getColor(this, R.color.stringColor)));
 neckView.setBoundFrets(Arrays.asList(1, 3, 5, 7, 9, 12));
+
+neckView.requestLayout();
+neckView.invalidate();
 
 ```
 
