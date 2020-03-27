@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="NeckView">
+        <attr name="nv_nutWidth" format="dimension"/>
+        <attr name="nv_fretWidth" format="dimension"/>
+        <attr name="nv_lastFretPadding" format="dimension"/>
+        <attr name="nv_topFinishWidth" format="dimension"/>
+        <attr name="nv_bottomFinishWidth" format="dimension"/>
+        <attr name="nv_finishWidth" format="dimension"/>
+        <attr name="nv_leftHanded" format="boolean"/>
+        <attr name="nv_drawZeroFret" format="boolean"/>
+        <attr name="nv_fretCount" format="integer"/>
+        <attr name="nv_animationDuration" format="integer"/>
+    </declare-styleable>
+
+</resources>

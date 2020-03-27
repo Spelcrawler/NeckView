@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="stringGauge48">8dp</dimen>
+    <dimen name="stringGauge9">2dp</dimen>
+    <dimen name="stringGauge105">14dp</dimen>
+    <dimen name="stringGauge30">6dp</dimen>
+</resources>

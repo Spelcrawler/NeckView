@@ -53,32 +53,34 @@ public class TrapezeColorFretboardBinding implements FretboardBinding {
     }
 
     @Override
-    public void draw(Context context, Canvas canvas, RectF bounds, int fretIndex) {
+    public void draw(Context context, Canvas canvas, RectF bounds, int fretIndex, boolean leftHanded) {
         bounds.left += mPadding;
         bounds.top += mPadding;
         bounds.right -= mPadding;
         bounds.bottom -= mPadding;
 
-        setupTrapezePath(mPath, bounds, mTrapezeDegree);
+        setupTrapezePath(mPath, bounds, mTrapezeDegree, leftHanded);
 
         Drawer.drawPath(canvas, mPath, mColor);
     }
 
-    private void setupTrapezePath(Path source, RectF bounds, float degree) {
+    private void setupTrapezePath(Path source, RectF bounds, float degree, boolean leftHanded) {
         //With square triangle formula - b = a * tg(B); B = 90 - A; we know A as degree an b as bounds.width()
         float padding = (float) (bounds.width() * Math.tan(Math.toRadians(90 - degree)));
 
         source.reset();
-        source.moveTo(bounds.left, bounds.bottom);
-        source.lineTo(bounds.left, bounds.top);
-        source.lineTo(bounds.right, bounds.top + padding);
-        source.lineTo(bounds.right, bounds.bottom - padding);
+        if (leftHanded) {
+            source.moveTo(bounds.right, bounds.bottom);
+            source.lineTo(bounds.right, bounds.top);
+            source.lineTo(bounds.left, bounds.top + padding);
+            source.lineTo(bounds.left, bounds.bottom - padding);
+        } else {
+            source.moveTo(bounds.left, bounds.bottom);
+            source.lineTo(bounds.left, bounds.top);
+            source.lineTo(bounds.right, bounds.top + padding);
+            source.lineTo(bounds.right, bounds.bottom - padding);
+        }
         source.close();
-    }
-
-    @Override
-    public void draw(Context context, Canvas canvas, RectF bounds) {
-        throw new RuntimeException("Use draw(Context, Canvas, RectF, int) method instead of this");
     }
 
 }

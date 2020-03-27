@@ -1,17 +1,17 @@
 package com.spelcrawler.neckview_sample;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.RectF;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.spelcrawler.neckview.NeckView;
-import com.spelcrawler.neckview.model.GuitarString;
 import com.spelcrawler.neckview.parts.CircleColorFretboardBinding;
 import com.spelcrawler.neckview.parts.CircleNoteMark;
 import com.spelcrawler.neckview.parts.ColorFretboardFinish;
@@ -29,7 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity implements NeckView.OnNoteClickListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements NeckView.OnNoteClickListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private NeckView mNeckView;
 
@@ -38,12 +38,15 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mNeckView = findViewById(R.id.neckView);
+        ((CheckBox) findViewById(R.id.checkbox_left_handed)).setOnCheckedChangeListener(this);
 
         findViewById(R.id.button_setup_bass).setOnClickListener(this);
         findViewById(R.id.button_setup_gibson).setOnClickListener(this);
         findViewById(R.id.button_setup_jackson).setOnClickListener(this);
 
         mNeckView.setOnNoteClickListener(this);
+        mNeckView.setLeftHanded(false);
+
 
         setupGibson(mNeckView);
         mNeckView.setNoteMarks(createMarks(10));
@@ -68,19 +71,14 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
     }
 
     private void setupJackson(NeckView neckView) {
-        neckView.setFretWidth(25f);
-        neckView.setNutWidth(150f);
-        neckView.setupGuitarStrings(6, 3, 6, 28);
-        neckView.setFinishWith(10);
-        neckView.setFretCount(15);
-        neckView.setNeckRightPadding(30);
+        neckView.setupGuitarStrings(6, 3, R.dimen.stringGauge9, R.dimen.stringGauge48);
 
-        neckView.setFretboardNut(new ColorFretboardNut(Color.BLACK));
+        neckView.setFretboardNut(new ColorFretboardNut(ContextCompat.getColor(this, R.color.black)));
         neckView.setFretboardTop(new DrawableFretboardTop(R.drawable.neck_top));
-        neckView.setFret(new TexturedFret(Color.LTGRAY));
-        neckView.setFretboardFinish(new ColorFretboardFinish(0xFFFFFFF0));
-        neckView.setFretboardBinding(new TriangleColorFretboardBinding(0xFFFFFFF0));
-        neckView.setFretboardString(new TexturedFretboardString(0xFFB8B8B6));
+        neckView.setFret(new TexturedFret(ContextCompat.getColor(this, R.color.fretColorGray)));
+        neckView.setFretboardFinish(new ColorFretboardFinish(ContextCompat.getColor(this, R.color.white)));
+        neckView.setFretboardBinding(new TriangleColorFretboardBinding(ContextCompat.getColor(this, R.color.white)));
+        neckView.setFretboardString(new TexturedFretboardString(ContextCompat.getColor(this, R.color.stringColor)));
         neckView.setBoundFrets(Arrays.asList(1, 3, 5, 7, 9, 12));
 
         neckView.requestLayout();
@@ -88,18 +86,13 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
     }
 
     private void setupGibson(NeckView neckView) {
-        neckView.setFretWidth(20f);
-        neckView.setNutWidth(50f);
-        neckView.setupGuitarStrings(6, 3, 6, 28);
-        neckView.setFinishWith(0);
-        neckView.setFretCount(15);
-        neckView.setNeckRightPadding(30);
+        neckView.setupGuitarStrings(6, 3, R.dimen.stringGauge9, R.dimen.stringGauge48);
 
-        neckView.setFretboardNut(new ColorFretboardNut(0xFFFFFFF0));
+        neckView.setFretboardNut(new ColorFretboardNut(ContextCompat.getColor(this, R.color.white)));
         neckView.setFretboardTop(new DrawableFretboardTop(R.drawable.neck_top));
-        neckView.setFret(new TexturedFret(0xFFCD7F32));
-        neckView.setFretboardBinding(new TrapezeColorFretboardBinding(0xFFFFFFF0, 20f, 65f));
-        neckView.setFretboardString(new TexturedFretboardString(0xFFB8B8B6));
+        neckView.setFret(new TexturedFret(ContextCompat.getColor(this, R.color.fretColorYellow)));
+        neckView.setFretboardBinding(new TrapezeColorFretboardBinding(ContextCompat.getColor(this, R.color.white), 20f, 65f));
+        neckView.setFretboardString(new TexturedFretboardString(ContextCompat.getColor(this, R.color.stringColor)));
         neckView.setBoundFrets(Arrays.asList(3, 5, 7, 9, 12));
 
         neckView.requestLayout();
@@ -107,18 +100,13 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
     }
 
     private void setupBass(NeckView neckView) {
-        neckView.setFretWidth(35f);
-        neckView.setNutWidth(50f);
-        neckView.setupGuitarStrings(4, 4, 20, 45);
-        neckView.setFinishWith(10);
-        neckView.setFretCount(15);
-        neckView.setNeckRightPadding(30);
+        neckView.setupGuitarStrings(4, 4, R.dimen.stringGauge30, R.dimen.stringGauge105);
 
-        neckView.setFretboardNut(new ColorFretboardNut(0xFFFFFFF0));
+        neckView.setFretboardNut(new ColorFretboardNut(ContextCompat.getColor(this, R.color.white)));
         neckView.setFretboardTop(new DrawableFretboardTop(R.drawable.neck_top));
-        neckView.setFret(new TexturedFret(0xFFC6C3BF));
-        neckView.setFretboardBinding(new CircleColorFretboardBinding(0xFFFFFFF0, 25f));
-        neckView.setFretboardString(new TexturedFretboardString(0xFFB8B8B6));
+        neckView.setFret(new TexturedFret(ContextCompat.getColor(this, R.color.fretColorGray)));
+        neckView.setFretboardBinding(new CircleColorFretboardBinding(ContextCompat.getColor(this, R.color.white), 25f));
+        neckView.setFretboardString(new TexturedFretboardString(ContextCompat.getColor(this, R.color.stringColor)));
         neckView.setBoundFrets(Arrays.asList(3, 5, 7, 9, 12));
 
         neckView.requestLayout();
@@ -146,4 +134,11 @@ public class MainActivity extends AppCompatActivity implements NeckView.OnNoteCl
                 break;
         }
     }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        mNeckView.setLeftHanded(isChecked);
+        mNeckView.invalidate();
+    }
+
 }

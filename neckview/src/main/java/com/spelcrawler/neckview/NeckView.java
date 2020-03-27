@@ -2,15 +2,16 @@ package com.spelcrawler.neckview;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -46,10 +47,11 @@ public class NeckView extends View {
 
     private int mFretCount = 14;
     private boolean mDrawZeroFret = false;
+    private boolean mLeftHanded = true;
 
     private float mNutWidth = 50;
     private float mFretWidth = 25;
-    private float mNeckRightPadding = 50;
+    private float mLastFretPadding = 50;
     private float mTopFinishWidth = 25;
     private float mBottomFinishWidth = 25;
 
@@ -114,7 +116,24 @@ public class NeckView extends View {
     }
 
     protected void initAttributes(@NonNull AttributeSet attrs, int defStyleAttr) {
+        TypedArray attributes = getContext().obtainStyledAttributes(attrs, R.styleable.NeckView, defStyleAttr, 0);
 
+        mNutWidth = attributes.getDimension(R.styleable.NeckView_nv_nutWidth, mNutWidth);
+        mFretWidth = attributes.getDimension(R.styleable.NeckView_nv_fretWidth, mFretWidth);
+        mLastFretPadding = attributes.getDimension(R.styleable.NeckView_nv_lastFretPadding, mLastFretPadding);
+        float finishWidth = attributes.getDimension(R.styleable.NeckView_nv_finishWidth, -1);
+        if (finishWidth > 0) {
+            mTopFinishWidth = finishWidth;
+            mBottomFinishWidth = finishWidth;
+        }
+        mTopFinishWidth = attributes.getDimension(R.styleable.NeckView_nv_topFinishWidth, mTopFinishWidth);
+        mBottomFinishWidth = attributes.getDimension(R.styleable.NeckView_nv_bottomFinishWidth, mBottomFinishWidth);
+        mLeftHanded = attributes.getBoolean(R.styleable.NeckView_nv_leftHanded, mLeftHanded);
+        mDrawZeroFret = attributes.getBoolean(R.styleable.NeckView_nv_drawZeroFret, mDrawZeroFret);
+        mFretCount = attributes.getInt(R.styleable.NeckView_nv_fretCount, mFretCount);
+        mAnimationDuration = attributes.getInt(R.styleable.NeckView_nv_animationDuration, (int) mAnimationDuration);
+
+        attributes.recycle();
     }
 
     public int getFretCount() {
@@ -149,12 +168,12 @@ public class NeckView extends View {
         mFretWidth = fretWidth;
     }
 
-    public float getNeckRightPadding() {
-        return mNeckRightPadding;
+    public float getLastFretPadding() {
+        return mLastFretPadding;
     }
 
-    public void setNeckRightPadding(float neckRightPadding) {
-        mNeckRightPadding = neckRightPadding;
+    public void setLastFretPadding(float lastFretPadding) {
+        mLastFretPadding = lastFretPadding;
     }
 
     public float getTopFinishWidth() {
@@ -299,18 +318,37 @@ public class NeckView extends View {
         }
     }
 
+    public void setupGuitarStrings(int stringCount, int woundedCount, @DimenRes int minWidth, @DimenRes int maxWidth) {
+        float minWidthPixel = getResources().getDimension(minWidth);
+        float maxWidthPixel = getResources().getDimension(maxWidth);
+
+        setupGuitarStrings(stringCount, woundedCount, minWidthPixel, maxWidthPixel);
+    }
+
+    public boolean isLeftHanded() {
+        return mLeftHanded;
+    }
+
+    public void setLeftHanded(boolean leftHanded) {
+        mLeftHanded = leftHanded;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mBounds.set(getPaddingLeft(), getPaddingTop(), getMeasuredWidth() - getPaddingRight(), getMeasuredHeight() - getPaddingBottom());
-        mFretboardBounds.set(mBounds.left + mNutWidth, mBounds.top, mBounds.right, mBounds.bottom);
-
-        mFretPositions = FretCalculator.calculate(mFretboardBounds.width() - mNeckRightPadding, mFretCount, true);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        mFretboardBounds.set(mBounds);
+        if (mLeftHanded) {
+            mFretboardBounds.right -= mNutWidth;
+        } else {
+            mFretboardBounds.left += mNutWidth;
+        }
+        mFretPositions = FretCalculator.calculate(mFretboardBounds.width() - mLastFretPadding, mFretCount, true, false);
         drawFretboardTop(canvas);
         drawNut(canvas);
         drawFretboardFinish(canvas);
@@ -375,7 +413,7 @@ public class NeckView extends View {
         if (mFretboardBinding == null) return;
         for (int fretIndex : mBoundFrets) {
             calculateFretboardBindingBounds(mDrawBounds, mFretPositions, fretIndex);
-            mFretboardBinding.draw(getContext(), canvas, mDrawBounds, fretIndex);
+            mFretboardBinding.draw(getContext(), canvas, mDrawBounds, fretIndex, mLeftHanded);
         }
     }
 
@@ -436,10 +474,8 @@ public class NeckView extends View {
         noteMark.draw(getContext(), canvas, mDrawBounds);
     }
 
-
     protected void calculateFretboardTopBounds(RectF source) {
-        source.set(mBounds);
-        source.left += mNutWidth;
+        source.set(mFretboardBounds);
         source.top += mTopFinishWidth;
         source.bottom -= mBottomFinishWidth;
     }
@@ -462,10 +498,16 @@ public class NeckView extends View {
 
     protected void calculateNutBounds(RectF source) {
         source.set(mBounds);
-        source.right = mBounds.left + mNutWidth;
+        if (mLeftHanded) {
+            source.left = mBounds.right - mNutWidth;
+        } else {
+            source.right = mBounds.left + mNutWidth;
+        }
     }
 
     protected void calculateFretBounds(RectF source, float fretCenterX) {
+        if (mLeftHanded) fretCenterX = mFretboardBounds.right - fretCenterX;
+
         source.left = mFretboardBounds.left + fretCenterX - mFretWidth / 2;
         source.top = mFretboardBounds.top;
         source.right = source.left + mFretWidth;
@@ -475,16 +517,18 @@ public class NeckView extends View {
     protected void calculateFretboardBindingBounds(RectF source, float[] frets, int fretIndex) {
         if (fretIndex == 0) throw new IllegalArgumentException("Can't draw binding on zero fret");
 
-        float leftFretCenterX = frets[fretIndex - 1];
-        float rightFretCenterX = frets[fretIndex];
+        float leftFretCenterX = mLeftHanded ? mFretboardBounds.right - frets[fretIndex] : frets[fretIndex - 1];
+        float rightFretCenterX = mLeftHanded ? mFretboardBounds.right - frets[fretIndex - 1] : frets[fretIndex];
 
         source.left = mFretboardBounds.left + leftFretCenterX + mFretWidth / 2;
         source.top = mFretboardBounds.top + mTopFinishWidth;
         source.right = mFretboardBounds.left + rightFretCenterX - mFretWidth / 2;
         source.bottom = mFretboardBounds.bottom - mTopFinishWidth;
 
-        if (fretIndex == 1 && !mDrawZeroFret) {
+        if (fretIndex == 1 && !mDrawZeroFret && !mLeftHanded) {
             source.left -= mFretWidth / 2;
+        } else if (fretIndex == 1 && !mDrawZeroFret && mLeftHanded) {
+            source.right += mFretWidth / 2;
         }
     }
 
@@ -502,17 +546,38 @@ public class NeckView extends View {
     protected void calculateNoteMarkBounds(RectF source, float[] frets, int fretIndex, int stringIndex) {
         float heightForString = mFretboardBounds.height() / mGuitarStrings.size();
 
-        source.left = fretIndex == 0 ? mFretboardBounds.left : mFretboardBounds.left + frets[fretIndex - 1] + mFretWidth / 2;
-        source.top = mBounds.top + heightForString * stringIndex;
-        source.right = fretIndex == 0 ? mFretboardBounds.left : mFretboardBounds.left + frets[fretIndex] - mFretWidth / 2;
-        source.bottom = source.top + heightForString;
+        if (mLeftHanded) {
+            source.left = fretIndex == 0 ? mFretboardBounds.right : mFretboardBounds.right - frets[fretIndex] - mFretWidth / 2;
+            source.top = mBounds.top + heightForString * stringIndex;
+            source.right = fretIndex == 0 ? mFretboardBounds.right : mFretboardBounds.right - frets[fretIndex - 1] + mFretWidth / 2;
+            source.bottom = source.top + heightForString;
+        } else {
+            source.left = fretIndex == 0 ? mFretboardBounds.left : mFretboardBounds.left + frets[fretIndex - 1] + mFretWidth / 2;
+            source.top = mBounds.top + heightForString * stringIndex;
+            source.right = fretIndex == 0 ? mFretboardBounds.left : mFretboardBounds.left + frets[fretIndex] - mFretWidth / 2;
+            source.bottom = source.top + heightForString;
+        }
     }
 
     private int findFretWithX(float[] frets, float x) {
+        return mLeftHanded ? findFretWithXLeftHanded(frets, x) : findFretWithXRightHanded(frets, x);
+    }
+
+    private int findFretWithXLeftHanded(float[] frets, float x) {
+        if (x > mFretboardBounds.right) return 0;
+
+        for (int i = 0; i < frets.length; i++) {
+            if (mFretboardBounds.right - frets[i] < x) return i;
+        }
+
+        return frets.length;
+    }
+
+    private int findFretWithXRightHanded(float[] frets, float x) {
         if (x < mFretboardBounds.left) return 0;
 
         for (int i = 0; i < frets.length; i++) {
-            if (frets[i] +  mFretboardBounds.left > x) return i;
+            if (frets[i] + mFretboardBounds.left > x) return i;
         }
 
         return frets.length;

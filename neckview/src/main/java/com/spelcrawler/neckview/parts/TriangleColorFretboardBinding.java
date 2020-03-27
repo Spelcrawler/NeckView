@@ -25,19 +25,20 @@ public class TriangleColorFretboardBinding implements FretboardBinding {
     }
 
     @Override
-    public void draw(Context context, Canvas canvas, RectF bounds, int fretIndex) {
+    public void draw(Context context, Canvas canvas, RectF bounds, int fretIndex, boolean leftHanded) {
         mPath.reset();
-        mPath.moveTo(bounds.left, bounds.bottom);
-        mPath.lineTo(bounds.left, bounds.top);
-        mPath.lineTo(bounds.right, bounds.bottom);
+        if (leftHanded) {
+            mPath.moveTo(bounds.right, bounds.bottom);
+            mPath.lineTo(bounds.left, bounds.top);
+            mPath.lineTo(bounds.left, bounds.bottom);
+        } else {
+            mPath.moveTo(bounds.left, bounds.bottom);
+            mPath.lineTo(bounds.right, bounds.top);
+            mPath.lineTo(bounds.right, bounds.bottom);
+        }
         mPath.close();
 
         Drawer.drawPath(canvas, mPath, mColor);
-    }
-
-    @Override
-    public void draw(Context context, Canvas canvas, RectF bounds) {
-        throw new RuntimeException("Use draw(Context, Canvas, RectF, int) method instead of this");
     }
 
 }

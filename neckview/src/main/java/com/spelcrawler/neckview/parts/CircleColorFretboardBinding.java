@@ -39,7 +39,7 @@ public class CircleColorFretboardBinding implements FretboardBinding {
     }
 
     @Override
-    public void draw(Context context, Canvas canvas, RectF bounds, int fretIndex) {
+    public void draw(Context context, Canvas canvas, RectF bounds, int fretIndex, boolean leftHanded) {
         if (fretIndex % 12 == 0) {
             float topY = bounds.top + bounds.height() / 4;
             float bottomY = bounds.bottom - bounds.height() / 4;
@@ -48,11 +48,6 @@ public class CircleColorFretboardBinding implements FretboardBinding {
         } else {
             Drawer.drawCircle(canvas, bounds.centerX(), bounds.centerY(), mRadius, mColor);
         }
-    }
-
-    @Override
-    public void draw(Context context, Canvas canvas, RectF bounds) {
-        throw new RuntimeException("Use draw(Context, Canvas, RectF, int) method instead of this");
     }
 
 }

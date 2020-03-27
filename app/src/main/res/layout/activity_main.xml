@@ -28,6 +28,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bass"/>
+        <CheckBox
+            android:id="@+id/checkbox_left_handed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Left-handed"/>
     </LinearLayout>
 
     <com.spelcrawler.neckview.NeckView
@@ -35,7 +40,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="96dp"
-        android:layout_marginBottom="96dp"/>
+        android:layout_marginBottom="96dp"
+        app:nv_nutWidth="20dp"
+        app:nv_fretWidth="8dp"
+        app:nv_lastFretPadding="30dp"
+        app:nv_finishWidth="6dp"
+        app:nv_leftHanded="false"
+        app:nv_drawZeroFret="false"
+        app:nv_fretCount="14"
+        app:nv_animationDuration="300"/>
 
 
 </FrameLayout>

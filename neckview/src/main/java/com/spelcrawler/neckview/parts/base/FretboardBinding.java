@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.RectF;
 
-public interface FretboardBinding extends FretboardPart {
+public interface FretboardBinding {
 
-    void draw(Context context, Canvas canvas, RectF bounds, int fretIndex);
+    void draw(Context context, Canvas canvas, RectF bounds, int fretIndex, boolean leftHanded);
 
 }
