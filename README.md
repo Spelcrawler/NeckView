@@ -27,7 +27,15 @@ Layout file:
 <com.spelcrawler.neckview.NeckView
     android:id="@+id/neckView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent"                                   
+    app:nv_nutWidth="20dp"
+    app:nv_fretWidth="8dp"
+    app:nv_lastFretPadding="30dp"
+    app:nv_finishWidth="6dp"
+    app:nv_leftHanded="false"
+    app:nv_drawZeroFret="false"
+    app:nv_fretCount="14"
+    app:nv_animationDuration="300"/>
 ```
 
 Setup code:
