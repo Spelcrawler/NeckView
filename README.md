@@ -45,9 +45,6 @@ neckView.setFretboardBinding(new TriangleColorFretboardBinding(ContextCompat.get
 neckView.setFretboardString(new TexturedFretboardString(ContextCompat.getColor(this, R.color.stringColor)));
 neckView.setBoundFrets(Arrays.asList(1, 3, 5, 7, 9, 12));
 
-neckView.requestLayout();
-neckView.invalidate();
-
 ```
 
 
