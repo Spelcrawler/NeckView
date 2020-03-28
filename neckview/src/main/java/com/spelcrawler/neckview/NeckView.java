@@ -441,9 +441,9 @@ public class NeckView extends View {
 
             if (oldMark == null && newMark != null) {
                 drawNoteMark(canvas, newMark);
-                return;
+                continue;
             } else if (newMark == null) {
-                return;
+                continue;
             }
 
             calculateNoteMarkBounds(mOldDrawBounds, mFretPositions, oldMark.getFret(), oldMark.getString());
