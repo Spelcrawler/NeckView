@@ -14,7 +14,7 @@ ext {
     siteUrl = 'https://github.com/Spelcrawler/NeckView'
     gitUrl = 'https://github.com/Spelcrawler/NeckView'
 
-    libraryVersion = '0.9.9'
+    libraryVersion = '0.9.10'
 
     developerId = 'spelcrawler'
     developerName = 'Anatoly Kazakov'

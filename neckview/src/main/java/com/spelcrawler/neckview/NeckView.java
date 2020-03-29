@@ -412,8 +412,10 @@ public class NeckView extends View {
     private void drawFretboardBindings(Canvas canvas) {
         if (mFretboardBinding == null) return;
         for (int fretIndex : mBoundFrets) {
-            calculateFretboardBindingBounds(mDrawBounds, mFretPositions, fretIndex);
-            mFretboardBinding.draw(getContext(), canvas, mDrawBounds, fretIndex, mLeftHanded);
+            if (fretIndex < mFretCount) {
+                calculateFretboardBindingBounds(mDrawBounds, mFretPositions, fretIndex);
+                mFretboardBinding.draw(getContext(), canvas, mDrawBounds, fretIndex, mLeftHanded);
+            }
         }
     }
 
@@ -442,7 +444,10 @@ public class NeckView extends View {
             if (oldMark == null && newMark != null) {
                 drawNoteMark(canvas, newMark);
                 continue;
-            } else if (newMark == null) {
+            } else if (newMark == null || newMark.getFret() >= mFretCount) {
+                continue;
+            } else if (oldMark.getFret() >= mFretCount) {
+                drawNoteMark(canvas, newMark);
                 continue;
             }
 
